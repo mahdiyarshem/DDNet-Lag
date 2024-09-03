@@ -1,35 +1,45 @@
 
 #include <iostream>
 #include <cstring>
-
-
 #include <unistd.h>
+#include <sys/socket.h> 
+#include <arpa/inet.h> 
+#include <string.h> 
+#define PORT 8080 
 
-void AMyActor::Tick(float DeltaTime)
-{
-Super::Tick(DeltaTime);
-if (Scrnsht) {
-TriggerOccur();
-std::this_thread::sleep_for(std::chrono::milliseconds(100));
-}
-if (P_Pressed_MyActor && DoOnce) {
-DAQmxClearTask(taskHandle1);
-UE_LOG(LogTemp, Log, TEXT(“Hello”));
-(DAQmxCreateTask(“”, &taskHandle1));
-(DAQmxCreateDOChan(taskHandle1, “Dev1/port0/line0:7”, “”, DAQmx_Val_ChanForAllLines));
-(DAQmxStartTask(taskHandle1));
-DoOnce = false;
-}
+int main(int argc, char const *argv[]) 
+{ 
+	int sock = 0, valread; 
+	struct sockaddr_in serv_addr; 
+	char *hello = "Connected from nt"; 
+	char buffer[1024] = {0}; 
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
+	{ 
+		printf("\n Socket creation error \n"); 
+		return -1; 
+	} 
 
-char Create::cl_margin_protect()
- give.handle_stable{
-    handle.prdection("0.01")
 
-     jel.pcc
-     {
-        margin.paol()
-     }
- 
-  if (handle.predcetion <= 100) //# { Inja Mitonid Az har Prede Kami Ke Khastid Estefade Konid , Tanha Mayabe  in line code 0.01 delay az  khode game e 
-    delete("toghether ","handle.predection","-+100",)
- } 
+	serv_addr.sin_family = AF_INET; 
+	serv_addr.sin_port = htons(PORT); 
+
+
+	
+	if(inet_pton(AF_INET, "1.1.1.1", "1.0.0.1", &serv_addr.sin_addr)<=0) 
+	{ 
+		printf("\nInvalid address\n"); 
+		return -1; 
+	} 
+
+
+	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
+	{ 
+		printf("\nConnection Failed \n"); 
+		return -1; 
+	} 
+	send(sock , hello , strlen(hello) , 0 ); 
+	printf("Connected Massage Send.\n"); 
+	valread = read( sock , buffer, 1024); 
+	printf("%s\n",buffer ); 
+	return 0; 
+} 
